@@ -18,3 +18,6 @@ private_subnet_cidr = [
   "10.0.3.0/27",
   "10.0.4.0/27"
 ]
+
+db_name     = "urlshortenerdb"
+db_username = "admin"

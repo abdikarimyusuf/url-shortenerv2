@@ -6,7 +6,7 @@ variable "name" {
 variable "cidr_block" {
   description = "The CIDR block for the VPC"
   type        = string
-} 
+}
 
 variable "availability_zones" {
   description = "List of availability zones for the subnets"
