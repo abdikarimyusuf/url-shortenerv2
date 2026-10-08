@@ -122,25 +122,25 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   ordered_cache_behavior {
-    path_pattern = "/i/*"
-    target_origin_id = "backend-alb"
+    path_pattern           = "/i/*"
+    target_origin_id       = "backend-alb"
     viewer_protocol_policy = "redirect-to-https"
 
     allowed_methods = [
-        "GET",
-        "HEAD",
-        "OPTIONS"
+      "GET",
+      "HEAD",
+      "OPTIONS"
     ]
     cached_methods = [
-        "GET",
-        "HEAD"
+      "GET",
+      "HEAD"
     ]
     forwarded_values {
       query_string = true
-  
-  cookies {
-    forward = "none"
-  }
+
+      cookies {
+        forward = "none"
+      }
     }
   }
   # RESTRICTIONS

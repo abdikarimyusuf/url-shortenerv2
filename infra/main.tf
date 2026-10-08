@@ -62,11 +62,11 @@ module "redis" {
 }
 
 module "iam" {
-  source        = "./modules/iam"
-  project_name  = var.project_name
-  environment   = var.environment
-  sqs_queue_arn = module.sqs.queue_arn
-  database_secret_arn    = module.rds.master_user_secret_arn
+  source              = "./modules/iam"
+  project_name        = var.project_name
+  environment         = var.environment
+  sqs_queue_arn       = module.sqs.queue_arn
+  database_secret_arn = module.rds.master_user_secret_arn
 }
 
 module "ecs_cluster" {
@@ -91,11 +91,11 @@ module "dashboard_service" {
   securitygroup_id = [module.security_groups.ecs_security_group_id]
 
   env = {
-    PORT        = "8081"
-    DB_NAME     = var.db_name
-    DB_USER     = var.db_username
-    DB_PORT     = module.rds.db_instance_port
-    DB_HOST     = module.rds.db_endpoint
+    PORT    = "8081"
+    DB_NAME = var.db_name
+    DB_USER = var.db_username
+    DB_PORT = module.rds.db_instance_port
+    DB_HOST = module.rds.db_endpoint
 
   }
   secrets = [{
@@ -116,15 +116,15 @@ module "api_service" {
   securitygroup_id        = [module.security_groups.ecs_security_group_id]
   target_group_arn        = module.alb.api_tg_arn
   env = {
-    PORT        = "8080"
-    DB_NAME     = var.db_name
-    DB_USER     = var.db_username
-    DB_PORT     = module.rds.db_instance_port
-    DB_HOST     = module.rds.db_endpoint
-    REDIS_HOST   = module.redis.redis_primary_endpoint
-    REDIS_PORT   = 6379
-    REDIS_SSL = "true"
-    BASE_URL = "https://abdikarim.co.uk"
+    PORT       = "8080"
+    DB_NAME    = var.db_name
+    DB_USER    = var.db_username
+    DB_PORT    = module.rds.db_instance_port
+    DB_HOST    = module.rds.db_endpoint
+    REDIS_HOST = module.redis.redis_primary_endpoint
+    REDIS_PORT = 6379
+    REDIS_SSL  = "true"
+    BASE_URL   = "https://abdikarim.co.uk"
 
 
   }
@@ -132,7 +132,7 @@ module "api_service" {
     name       = "DB_PASSWORD"
     value_from = "${module.rds.master_user_secret_arn}:password::"
   }]
-  
+
 }
 
 
@@ -157,7 +157,7 @@ module "worker_service" {
   }
   secrets = [{
     name       = "DB_PASSWORD"
-   value_from = "${module.rds.master_user_secret_arn}:password::"
+    value_from = "${module.rds.master_user_secret_arn}:password::"
   }]
 
 }
@@ -176,7 +176,7 @@ module "alb" {
 module "dns" {
   source                 = "./modules/dns"
   domain_name            = var.domain_name
-  subdomain               = var.subdomain
+  subdomain              = var.subdomain
   cloudfront_domain_name = module.cloudfront.cloudfront_domain_name
   cloudfront_zone_id     = module.cloudfront.cloudfront_zone_id
   alb_dns_name           = module.alb.load_balancer_dns_name

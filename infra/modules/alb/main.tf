@@ -92,7 +92,7 @@ resource "aws_lb_listener" "https" {
   ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
   certificate_arn = var.certificate_arn
   depends_on = [
-    var.certificate_arn]
+  var.certificate_arn]
   default_action {
     type = "fixed-response"
 
