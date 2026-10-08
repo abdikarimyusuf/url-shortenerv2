@@ -1,0 +1,29 @@
+name: apply
+
+on:
+    push:
+        branches:
+            - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: setup terraform
+          uses: hashicorp/setup-terraform@v3
+
+        - name: aws configure
+          uses: aws-actions/configure-aws-credentials@v3
+          with:
+            role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+            aws-region: eu-west-2
+
+        - name: verify AWS credentials
+          run: aws sts get-caller-identity
