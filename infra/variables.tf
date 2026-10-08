@@ -41,11 +41,7 @@ variable "private_subnet_cidr" {
   default     = ["10.0.0.64/27", "10.0.0.96/27"]
 }
 
-variable "backend_bucket" {
-  description = "The name of the S3 bucket"
-  type        = string
-  default     = "url-shortener-bucket98"
-}
+
 variable "db_name" {
   description = "The name of the RDS database"
   type        = string
