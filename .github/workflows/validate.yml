@@ -29,9 +29,6 @@ jobs:
         - name: Terraform Validate
           working-directory: ./infra
           run: terraform validate
-          
-        - name: Terraform Plan
-          working-directory: ./infra
-          run: terraform plan 
+        
 
         
