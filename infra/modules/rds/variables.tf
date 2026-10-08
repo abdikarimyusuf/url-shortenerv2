@@ -62,7 +62,7 @@ variable "security_group_ids" {
 variable "db_backup_retention_period" {
   description = "The number of days to retain backups for the RDS database"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "private_subnet_ids" {

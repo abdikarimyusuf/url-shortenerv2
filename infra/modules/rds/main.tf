@@ -18,10 +18,10 @@ resource "aws_db_instance" "db_instance" {
   engine         = var.db_engine
   engine_version = var.db_engine_version
 
-  instance_class              = var.db_instance_class
-  db_name                     = var.db_name
-  username                    = var.db_username
-  port                        = var.db_port
+  instance_class = var.db_instance_class
+  db_name        = var.db_name
+  username       = var.db_username
+  port           = var.db_port
   manage_master_user_password = true
 
   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
@@ -33,7 +33,7 @@ resource "aws_db_instance" "db_instance" {
   backup_window                   = "03:00-04:00"
   maintenance_window              = "Mon:04:00-Mon:05:00"
   apply_immediately               = false
-  enabled_cloudwatch_logs_exports = ["error", "general", "slowquery", "postgresql", "upgrade"]
+  enabled_cloudwatch_logs_exports = ["postgresql"]
   performance_insights_enabled    = false
   deletion_protection             = false
 

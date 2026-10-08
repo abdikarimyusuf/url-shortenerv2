@@ -7,3 +7,34 @@ __pycache__/
 *.out
 .plan
 terraform.tfstate*
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+git rm -r --cached bootstrap/.terraform
+
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Personal documentation
+**/README.md
+**/README.txt
+**/README.*
+
+# Docker Compose
+docker-compose.yml
+docker-compose.yaml
+docker-compose.ymll
+**/docker-compose.yml
+**/docker-compose.yaml
+
+# Scripts / local init files
+script/
+**/entrypoint.sh
+
+

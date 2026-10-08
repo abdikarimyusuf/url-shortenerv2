@@ -11,7 +11,7 @@ variable "environment" {
 variable "redis_node_type" {
   description = "The node type for the Redis instance"
   type        = string
-  default     = "t3.micro"
+  default     = "cache.t3.micro"
 }
 
 variable "redis_engine_version" {

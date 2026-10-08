@@ -10,8 +10,24 @@ If both are set, DATABASE_URL takes precedence.
 """
 
 import os
+import redis
+import json
 
 _backend = None
+_redis = None
+
+def _get_redis():
+    global _redis
+
+    if _redis is None:
+        _redis = redis.Redis(
+            host=os.getenv("REDIS_HOST", "redis"),
+            port=int(os.getenv("REDIS_PORT", "6379")),
+            ssl=os.getenv("REDIS_SSL", "false").lower() == "true",
+            decode_responses=True,
+        )
+
+    return _redis
 
 
 def _get_backend():
@@ -79,9 +95,30 @@ def _init_postgres():
             )
 
     def get(short_id: str):
+        r = _get_redis()
+
+        # Check Redis first
+        cached_url = r.get(f"url:{short_id}")
+
+        if cached_url:
+            return {
+                "id": short_id,
+                "url": cached_url,
+            }
+
+        # Redis miss → check PostgreSQL
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT id, url, clicks FROM urls WHERE id = %s", (short_id,))
-            return cur.fetchone()
+            cur.execute(
+                "SELECT id, url, clicks FROM urls WHERE id = %s",
+                (short_id,),
+            )
+            item = cur.fetchone()
+
+        if item:
+            # Store the URL in Redis for future requests
+            r.set(f"url:{short_id}", item["url"])
+
+        return item
 
     def incr(short_id: str):
         with conn.cursor() as cur:

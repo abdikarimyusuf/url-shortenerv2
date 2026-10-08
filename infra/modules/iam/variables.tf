@@ -12,8 +12,9 @@ variable "sqs_queue_arn" {
 
 }
 
-variable "rds_secret_arn" {
-  description = "ARN of the RDS credentials secret"
-  type        = string
 
+
+variable "database_secret_arn" {
+  type        = string
+  description = "ARN of the database credentials secret"
 }

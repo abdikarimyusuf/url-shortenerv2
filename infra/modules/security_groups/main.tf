@@ -1,5 +1,5 @@
 resource "aws_security_group" "alb" {
-  name        = "${var.project_name}-${var.environment}-vpc-endpoint-sg"
+  name        = "${var.project_name}-${var.environment}-vpc-alb-sg"
   description = "Security group for alb"
   vpc_id      = var.vpc_id
 
@@ -125,6 +125,7 @@ resource "aws_vpc_security_group_ingress_rule" "redis" {
   ip_protocol                  = "tcp"
   description                  = "Allow Redis traffic from the ecs"
 }
+
 
 resource "aws_vpc_security_group_egress_rule" "redis_egress" {
   security_group_id = aws_security_group.redis.id

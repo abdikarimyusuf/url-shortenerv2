@@ -27,7 +27,7 @@ resource "aws_ecs_task_definition" "task_def" {
 
   container_definitions = jsonencode([
     {
-      name      = var.name
+      name      = var.container_name
       image     = var.image
       essential = true
 
@@ -58,9 +58,9 @@ resource "aws_ecs_task_definition" "task_def" {
         logDriver = "awslogs"
 
         options = {
-          awslogs-group        = aws_cloudwatch_log_group.cloudwatch.name
-          awslogs-region       = "eu-west-2"
-          awslog-stream-prefix = var.project_name
+          awslogs-group         = aws_cloudwatch_log_group.cloudwatch.name
+          awslogs-region        = "eu-west-2"
+          awslogs-stream-prefix = var.project_name
         }
       }
     }

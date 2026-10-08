@@ -23,10 +23,10 @@ resource "aws_sqs_queue_redrive_policy" "main_queue_redrive_policy" {
 
 
 resource "aws_sqs_queue_redrive_allow_policy" "main_queue_redrive_allow_policy" {
-  queue_url = aws_sqs_queue.main_queue.id
+  queue_url = aws_sqs_queue.dead_letter_queue.id
   redrive_allow_policy = jsonencode({
     redrivePermission = "byQueue"
-    sourceQueueArn    = [aws_sqs_queue.main_queue.arn]
+    sourceQueueArns   = [aws_sqs_queue.main_queue.arn]
 
   })
 

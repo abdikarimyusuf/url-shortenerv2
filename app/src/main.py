@@ -3,16 +3,24 @@ from fastapi.responses import RedirectResponse
 import os, hashlib, time, json
 from .db import put_mapping, get_mapping, get_backend_type, increment_clicks
 from .events import publish_click_event
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+#app.add_middleware(
+  #  CORSMiddleware,
+  #  allow_origins=["https://abdikarim.co.uk"],
+  #  allow_credentials=True,
+ #  allow_methods=["*"],
+ #   allow_headers=["*"],
+#)
 
 @app.get("/healthz")
 def health():
     return {"status": "ok", "ts": int(time.time()), "db": get_backend_type()}
 
 
-@app.post("/shorten")
+@app.post("/api/shorten")
 async def shorten(req: Request):
     body = await req.json()
     url = body.get("url")
@@ -21,10 +29,10 @@ async def shorten(req: Request):
     short = hashlib.sha256(url.encode()).hexdigest()[:8]
     put_mapping(short, url)
     base_url = os.environ.get("BASE_URL", "")
-    return {"short": short, "url": url, "short_url": f"{base_url}/{short}" if base_url else short}
+    return {"short": short, "url": url, "short_url": f"{base_url}/i/{short}" if base_url else short}
 
 
-@app.get("/stats/{short_id}")
+@app.get("/api/stats/{short_id}")
 def stats(short_id: str):
     item = get_mapping(short_id)
     if not item:
@@ -32,7 +40,7 @@ def stats(short_id: str):
     return {"short": short_id, "url": item["url"], "clicks": item.get("clicks", 0)}
 
 
-@app.get("/{short_id}")
+@app.get("/i/{short_id}")
 def resolve(short_id: str, request: Request):
     item = get_mapping(short_id)
     if not item:
@@ -48,5 +56,6 @@ def resolve(short_id: str, request: Request):
         user_agent=request.headers.get("user-agent", ""),
         referer=request.headers.get("referer", ""),
     )
+    return RedirectResponse(item["url"], status_code=307)
 
-    return RedirectResponse(item["url"])
+

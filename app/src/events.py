@@ -8,6 +8,7 @@ import os
 import json
 import time
 import logging
+import boto3
 
 logger = logging.getLogger(__name__)
 
@@ -16,17 +17,13 @@ _sqs_client = None
 
 def _get_sqs():
     global _sqs_client
-    if _sqs_client is not None:
-        return _sqs_client
 
-    queue_url = os.environ.get("SQS_QUEUE_URL")
-    if not queue_url:
-        return None
-
-    import boto3
-    _sqs_client = boto3.client("sqs")
-    return _sqs_client
-
+    if _sqs_client is None:
+        _sqs_client = boto3.client(
+            "sqs",
+            region_name=os.getenv("AWS_REGION", "eu-west-2"),
+           # endpoint_url=os.getenv("AWS_ENDPOINT_URL"),
+        )
 
 def publish_click_event(short_code: str, ip: str, user_agent: str, referer: str):
     event = {

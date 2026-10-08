@@ -26,6 +26,11 @@ output "db_name" {
 }
 
 output "master_user_secret_arn" {
-  value       = aws_db_instance.db_instance.master_user_secret[0].secret_arn
-  description = "The ARN of the master user secret for the RDS instance"
+  value = aws_db_instance.db_instance.master_user_secret[0].secret_arn
 }
+
+output "db_endpoint" {
+  description = "db endpoint"
+  value       = aws_db_instance.db_instance.address
+}
+

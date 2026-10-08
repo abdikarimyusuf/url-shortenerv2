@@ -50,6 +50,11 @@ variable "container_port" {
   default     = null
 }
 
+variable "container_name" {
+  description = "name of the contianer"
+  type        = string
+}
+
 variable "env" {
   description = "Environment variables passed into the container"
   type        = map(string)
@@ -59,7 +64,8 @@ variable "env" {
 variable "secrets" {
   description = "injected secrets"
   type = list(object({
-
+    name       = string
+    value_from = string
   }))
 
   default = []

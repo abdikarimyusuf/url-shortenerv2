@@ -86,3 +86,21 @@ output "dashboard_ecs_service_name" {
   description = "dashboard ecs service name"
   value       = module.dashboard_service.service_name
 }
+output "waf_web_acl_arn" {
+  description = "wag web acl ARN"
+  value       = module.waf.web_acl_arn
+}
+
+output "frontend_bucket_name" {
+  description = "name for the frontend bucket"
+  value       = module.cloudfront.bucket_name
+}
+
+output "cloudfront_distribution_id" {
+  value = module.cloudfront.distribution_id
+}
+
+output "alb_certificate_arn" {
+  description = "alb certificate arn"
+  value       = module.dns.alb_certificate_arn
+}

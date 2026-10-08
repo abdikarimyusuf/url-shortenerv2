@@ -3,8 +3,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -15,13 +17,26 @@ import (
 var db *sql.DB
 
 func main() {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		log.Fatal("DATABASE_URL is required")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	if dbUser == "" || dbPassword == "" || dbHost == "" || dbPort == "" || dbName == "" {
+		log.Fatal("Database environment variables are required")
+	}
+
+	dbURL := &url.URL{
+		Scheme:   "postgres",
+		User:     url.UserPassword(dbUser, dbPassword),
+		Host:     fmt.Sprintf("%s:%s", dbHost, dbPort),
+		Path:     "/" + dbName,
+		RawQuery: "sslmode=require", // Use "disable" if you don't want SSL
 	}
 
 	var err error
-	db, err = sql.Open("postgres", dbURL)
+	db, err = sql.Open("postgres", dbURL.String())
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -196,9 +211,13 @@ func waitForDB() {
 	for i := 0; i < 30; i++ {
 		if err := db.Ping(); err == nil {
 			return
+		} else {
+			log.Printf("Database ping failed: %v", err)
 		}
+
 		log.Printf("Waiting for database... (%d/30)", i+1)
 		time.Sleep(time.Second)
 	}
+
 	log.Fatal("Database not ready after 30s")
 }

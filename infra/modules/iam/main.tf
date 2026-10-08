@@ -28,6 +28,26 @@ resource "aws_iam_role_policy_attachment" "ecs-task-execution" {
 
 }
 
+resource "aws_iam_role_policy" "ecs_secrets" {
+  name = "${var.project_name}-${var.environment}-ecs_secrets"
+  role = aws_iam_role.ecs_task_execution.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+
+        Resource = var.database_secret_arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role" "api_task" {
   name               = "${var.project_name}-${var.environment}-api_task_role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
@@ -44,11 +64,23 @@ data "aws_iam_policy_document" "api_task" {
     effect = "Allow"
     actions = [
       "sqs:SendMessage"
-      #That is least privilege.
     ]
 
     resources = [
       var.sqs_queue_arn
+    ]
+  }
+
+  statement {
+    sid    = "ReadRDSCredentials"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:GetSecretValue"
+    ]
+
+    resources = [
+      var.database_secret_arn
     ]
   }
 
@@ -79,13 +111,26 @@ data "aws_iam_policy_document" "worker_policy" {
       "sqs:SendMessage",
       "sqs:DeleteMessage",
       "sqs:ChangeMessageVisibility",
-      "sqs:GetQueueAttributes"
+      "sqs:GetQueueAttributes",
+      "sqs:ReceiveMessage"
 
-      #That is least privilege.
+      #least privilege.
     ]
 
     resources = [
       var.sqs_queue_arn
+    ]
+  }
+  statement {
+    sid    = "ReadRDSCredentials"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:GetSecretValue"
+    ]
+
+    resources = [
+      var.database_secret_arn
     ]
   }
 
@@ -115,17 +160,17 @@ data "aws_iam_policy_document" "ecs_secret_policy" {
     effect = "Allow"
     actions = [
       "secretsmanager:GetSecretValue"
-      #That is least privilege.
+      #least privilege.
     ]
 
     resources = [
-      var.rds_secret_arn
+      var.database_secret_arn
     ]
   }
 
 }
 
-resource "aws_iam_role_policy" "ecs_secret" {
+resource "aws_iam_role_policy" "dashboard_task_inline_policy" {
   name   = "${var.project_name}-${var.environment}-inline-ecs-secret"
   role   = aws_iam_role.ecs_task_execution.id
   policy = data.aws_iam_policy_document.ecs_secret_policy.json

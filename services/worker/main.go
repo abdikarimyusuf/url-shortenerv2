@@ -4,17 +4,24 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
+
 	_ "github.com/lib/pq"
 )
 
 var db *sql.DB
+var sqsClient *sqs.Client
 
 type ClickEvent struct {
 	ShortCode string `json:"short_code"`
@@ -24,14 +31,32 @@ type ClickEvent struct {
 	Timestamp string `json:"timestamp"`
 }
 
+type SQSMessage struct {
+	Body          string
+	ReceiptHandle string
+}
+
 func main() {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		log.Fatal("DATABASE_URL is required")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	if dbUser == "" || dbPassword == "" || dbHost == "" || dbPort == "" || dbName == "" {
+		log.Fatal("Database environment variables are required")
+	}
+
+	dbURL := &url.URL{
+		Scheme: "postgres",
+		User:   url.UserPassword(dbUser, dbPassword),
+		Host:   fmt.Sprintf("%s:%s", dbHost, dbPort),
+		Path:   "/" + dbName,
+		RawQuery: "sslmode=require", // Use "disable" if you don't want SSL
 	}
 
 	var err error
-	db, err = sql.Open("postgres", dbURL)
+	db, err = sql.Open("postgres", dbURL.String())
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -47,6 +72,12 @@ func main() {
 	if sqsQueue == "" {
 		log.Fatal("SQS_QUEUE_URL is required")
 	}
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		log.Fatalf("Unable to load AWS config: %v", err)
+	}
+
+	sqsClient = sqs.NewFromConfig(cfg)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -116,28 +147,77 @@ func pollSQS(ctx context.Context, queueURL string) {
 		case <-ctx.Done():
 			log.Println("Worker stopped")
 			return
+
 		default:
-			messages := receiveSQSMessages(queueURL)
+			messages := receiveSQSMessages(ctx, queueURL)
+
 			for _, msg := range messages {
-				if err := processClickEvent(msg); err != nil {
+
+				// Step 1: Process the event
+				err := processClickEvent(msg.Body)
+
+				if err != nil {
 					log.Printf("Failed to process event: %v", err)
+
+					// IMPORTANT:
+					// Do NOT delete the message.
 					continue
 				}
-				// Delete message from queue after successful processing
-				log.Printf("Processed click event: %s", msg)
-			}
-			if len(messages) == 0 {
-				time.Sleep(5 * time.Second)
+
+				// Step 2: Processing succeeded.
+				// Now delete the message from SQS.
+				err = deleteSQSMessage(
+					ctx,
+					queueURL,
+					msg.ReceiptHandle,
+				)
+
+				if err != nil {
+					log.Printf("Failed to delete SQS message: %v", err)
+					continue
+				}
+
+				log.Printf("Processed and deleted click event: %s", msg.Body)
 			}
 		}
 	}
 }
 
-func receiveSQSMessages(queueURL string) []string {
-	// Students implement with AWS SDK SQS ReceiveMessage
-	// Use long polling: WaitTimeSeconds = 20
-	// MaxNumberOfMessages = 10
-	return nil
+func receiveSQSMessages(ctx context.Context, queueURL string) []SQSMessage {
+	input := &sqs.ReceiveMessageInput{
+		QueueUrl:            aws.String(queueURL),
+		MaxNumberOfMessages: 10,
+		WaitTimeSeconds:     20,
+	}
+
+	result, err := sqsClient.ReceiveMessage(ctx, input)
+	if err != nil {
+		log.Printf("Failed to receive SQS messages: %v", err)
+		return nil
+	}
+
+	var messages []SQSMessage
+
+	for _, message := range result.Messages {
+		if message.Body == nil || message.ReceiptHandle == nil {
+			continue
+		}
+
+		messages = append(messages, SQSMessage{
+			Body:          *message.Body,
+			ReceiptHandle: *message.ReceiptHandle,
+		})
+	}
+
+	return messages
+}
+func deleteSQSMessage(ctx context.Context, queueURL string, receiptHandle string) error {
+	_, err := sqsClient.DeleteMessage(ctx, &sqs.DeleteMessageInput{
+		QueueUrl:      aws.String(queueURL),
+		ReceiptHandle: aws.String(receiptHandle),
+	})
+
+	return err
 }
 
 func processClickEvent(raw string) error {
@@ -181,13 +261,18 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
+
 func waitForDB() {
 	for i := 0; i < 30; i++ {
 		if err := db.Ping(); err == nil {
 			return
+		} else {
+			log.Printf("Database ping failed: %v", err)
 		}
+
 		log.Printf("Waiting for database... (%d/30)", i+1)
 		time.Sleep(time.Second)
 	}
+
 	log.Fatal("Database not ready after 30s")
 }

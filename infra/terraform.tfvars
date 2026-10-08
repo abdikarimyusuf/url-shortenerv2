@@ -10,14 +10,14 @@ availability_zones = [
 ]
 
 public_subnet_cidr = [
-  "10.0.1.0/27",
-  "10.0.2.0/27"
+  "10.0.0.0/27",
+  "10.0.0.32/27"
 ]
 
 private_subnet_cidr = [
-  "10.0.3.0/27",
-  "10.0.4.0/27"
+  "10.0.0.64/27",
+  "10.0.0.96/27"
 ]
 
 db_name     = "urlshortenerdb"
-db_username = "admin"
+db_username = "admin98"

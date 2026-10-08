@@ -32,13 +32,13 @@ variable "availability_zones" {
 variable "public_subnet_cidr" {
   description = "List of CIDR blocks for public subnets"
   type        = list(string)
-  default     = ["10.0.1.0/27", "10.0.2.0/27"]
+  default     = ["10.0.0.0/27", "10.0.0.32/27"]
 }
 
 variable "private_subnet_cidr" {
   description = "List of CIDR blocks for private subnets"
   type        = list(string)
-  default     = ["10.0.3.0/27", "10.0.4.0/27"]
+  default     = ["10.0.0.64/27", "10.0.0.96/27"]
 }
 
 variable "backend_bucket" {
@@ -56,3 +56,15 @@ variable "db_username" {
   type        = string
 }
 
+variable "domain_name" {
+  description = "root domain name"
+  type        = string
+  default     = "abdikarim.co.uk"
+}
+
+
+variable "subdomain" {
+  description = "subdomain for the application"
+  type        = string
+  default     = "api"
+}
