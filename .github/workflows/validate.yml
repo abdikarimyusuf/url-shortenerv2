@@ -30,5 +30,16 @@ jobs:
           working-directory: ./infra
           run: terraform validate
         
+        - name: setup TFLint
+          uses: terraform-linters/setup-tflint@v4
+
+        - name: Initialize TFLint
+          working-directory: ./infra
+          run: tflint --init
+
+        - name: run TFLint
+          working-directory: ./infra
+          run: tflint 
+
 
         
