@@ -72,7 +72,7 @@ data "aws_iam_policy_document" "github_actions_assume_role_trust_policy" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repository}:ref:refs/heads/${var.github_branch}"]
+      values   = ["repo:abdikarimyusuf@135855913/url-shortenerv2@1359477764:ref:refs/heads/main"]
     }
   }
 }

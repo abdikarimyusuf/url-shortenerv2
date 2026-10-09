@@ -16,11 +16,6 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
 
-        - name: Debug OIDC token
-          uses: github/actions-oidc-debugger@main
-          with:
-            audience: sts.amazonaws.com
-
 
         - name: aws configure
           uses: aws-actions/configure-aws-credentials@v3
