@@ -35,7 +35,7 @@ jobs:
 
         - name: Terraform plan
           working-directory: ./infra
-          run: terraform plan 
+          run: terraform plan -out=tfplan
 
         - name: Terraform apply
           working-directory: ./infra
