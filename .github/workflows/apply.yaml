@@ -15,20 +15,21 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v4
-        
-        - name: setup terraform
-          uses: hashicorp/setup-terraform@v3
 
         - name: Debug OIDC token
           uses: github/actions-oidc-debugger@main
           with:
             audience: sts.amazonaws.com
 
+
         - name: aws configure
           uses: aws-actions/configure-aws-credentials@v3
           with:
             role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
             aws-region: eu-west-2
+
+        - name: setup terraform
+          uses: hashicorp/setup-terraform@v3
 
         - name: verify AWS credentials
           run: aws sts get-caller-identity
