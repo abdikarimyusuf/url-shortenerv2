@@ -23,8 +23,22 @@ jobs:
             role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
             aws-region: eu-west-2
 
+        - name: verify identity
+          run: aws sts get-caller-identity
+
         - name: setup terraform
           uses: hashicorp/setup-terraform@v3
+        
+        - name: Terraform inizialize
+          working-directory: ./infra
+          run: terraform init
 
-        - name: verify AWS credentials
-          run: aws sts get-caller-identity
+        - name: Terraform plan
+          working-directory: ./infra
+          run: terraform plan 
+
+        - name: Terraform apply
+          working-directory: ./infra
+          run: terraform apply -auto-approve
+
+      
