@@ -37,8 +37,6 @@ jobs:
           working-directory: ./infra
           run: terraform plan -out=tfplan
 
-        - name: Terraform apply
-          working-directory: ./infra
-          run: terraform apply -auto-approve
+        
 
       

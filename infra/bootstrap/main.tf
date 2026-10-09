@@ -158,6 +158,19 @@ data "aws_iam_policy_document" "github_actions_role_permissions" {
   }
 
   statement {
+    sid = "Route53"
+    effect = "Allow"
+
+    actions = [
+      "route53:ChangeResourceRecordSets",
+      "route53:GetChange",
+      "route53:ListResourceRecordSets",
+      "route53:ListHostedZones"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "ECS"
     effect = "Allow"
     actions = [
