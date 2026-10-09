@@ -115,6 +115,47 @@ data "aws_iam_policy_document" "github_actions_role_permissions" {
 
     resources = ["*"]
   }
+  statement {
+    sid    = "TerraformStateBucketAccess"
+    effect = "Allow"
+
+    actions = [
+      "s3:ListBucket"
+    ]
+
+    resources = [
+      "arn:aws:s3:::url-shortener-bucket-1234567890123"
+    ]
+  }
+
+  statement {
+    sid    = "TerraformStateObjectAccess"
+    effect = "Allow"
+
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::url-shortener-bucket-1234567890123/url-shortener/terraform.tfstate"
+    ]
+  }
+
+  statement {
+    sid    = "TerraformStateLockAccess"
+    effect = "Allow"
+
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::url-shortener-bucket-1234567890123/url-shortener/terraform.tfstate.tflock"
+    ]
+  }
 
   statement {
     sid    = "ECS"
