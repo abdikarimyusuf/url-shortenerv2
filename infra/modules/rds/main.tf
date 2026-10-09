@@ -14,6 +14,7 @@ resource "aws_db_instance" "db_instance" {
   max_allocated_storage = var.db_max_allocated_storage
   storage_encrypted     = true
   storage_type          = "gp2"
+  kms_key_id        = "alias/aws/rds"
 
   engine         = var.db_engine
   engine_version = var.db_engine_version
