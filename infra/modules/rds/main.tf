@@ -28,6 +28,7 @@ resource "aws_db_instance" "db_instance" {
   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
   vpc_security_group_ids = var.security_group_ids
   skip_final_snapshot    = true
+  master_user_secret_kms_key_id = "arn:aws:kms:eu-west-2:266380778025:key/74bda178-4891-44f4-9506-fd3e7037b940"
 
   publicly_accessible             = false
   backup_retention_period         = var.db_backup_retention_period

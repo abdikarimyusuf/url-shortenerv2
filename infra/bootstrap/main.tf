@@ -403,6 +403,20 @@ data "aws_iam_policy_document" "github_actions_role_permissions" {
     resources = ["*"]
   }
 
+  statement {
+  sid    = "AllowRDSKMSAccess"
+  effect = "Allow"
+
+  actions = [
+    "kms:DescribeKey",
+    "kms:CreateGrant"
+  ]
+
+  resources = [
+    "arn:aws:kms:eu-west-2:266380778025:key/0b4b1abd-5d98-4923-a42a-a27677c753cc"
+  ]
+}
+
   # Create and manage project IAM roles and policies
   statement {
     sid    = "CreateAndManageProjectIAMRoles"
@@ -533,7 +547,15 @@ data "aws_iam_policy_document" "github_actions_role_permissions" {
       "s3:DeleteBucket",
       "s3:GetObject",
       "s3:PutObject",
-      "s3:DeleteObject"
+      "s3:DeleteObject",
+      "s3:GetBucketAcl",
+      "s3:GetBucketCORS",
+      "s3:GetAccelerateConfiguration",
+      "s3:GetBucketRequestPayment",
+      "s3:GetBucketLogging",
+      "s3:GetLifecycleConfiguration",
+      "s3:GetReplicationConfiguration",
+      "s3:GetBucketObjectLockConfiguration"
     ]
 
     resources = [
