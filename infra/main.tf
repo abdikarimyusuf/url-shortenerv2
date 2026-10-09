@@ -76,9 +76,9 @@ module "ecs_cluster" {
 
 }
 module "dashboard_service" {
-  source = "./modules/ecs-service"
-  name   = "${var.project_name}-${var.environment}-dashboard"
-
+  source                  = "./modules/ecs-service"
+  name                    = "${var.project_name}-${var.environment}-dashboard"
+  count                   = var.deploy_app_services ? 1 : 0
   cluster_arn             = module.ecs_cluster.cluster_arn
   task_execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn           = module.iam.ecs_dashboard_role_arn
@@ -106,6 +106,7 @@ module "dashboard_service" {
 module "api_service" {
   source                  = "./modules/ecs-service"
   name                    = "${var.project_name}-${var.environment}-api"
+  count                   = var.deploy_app_services ? 1 : 0
   cluster_arn             = module.ecs_cluster.cluster_arn
   task_execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn           = module.iam.ecs_api_role_arn
@@ -140,6 +141,7 @@ module "api_service" {
 module "worker_service" {
   source                  = "./modules/ecs-service"
   name                    = "${var.project_name}-${var.environment}-worker"
+  count                   = var.deploy_app_services ? 1 : 0
   cluster_arn             = module.ecs_cluster.cluster_arn
   task_execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn           = module.iam.ecs_worker_role_arn
@@ -199,9 +201,9 @@ module "observability" {
   source                     = "./modules/observability"
   name                       = "${var.project_name}-${var.environment}-cloudwatch"
   cluster_name               = module.ecs_cluster.cluster_name
-  api_service_name           = module.api_service.service_name
-  worker_service_name        = module.worker_service.service_name
-  dashboard_service_name     = module.dashboard_service.service_name
+  api_service_name           = var.deploy_app_services ? module.api_service[0].service_name : null
+  worker_service_name        = var.deploy_app_services ? module.worker_service[0].service_name : null
+  dashboard_service_name     = var.deploy_app_services ? module.dashboard_service[0].service_name : null
   alb_arn_suffix             = module.alb.load_balancer_arn_suffix
   api_tg_arn_suffix          = module.alb.api_tg_arn_suffix
   dashboard_tg_arn_suffix    = module.alb.dashboard_tg_arn_suffix

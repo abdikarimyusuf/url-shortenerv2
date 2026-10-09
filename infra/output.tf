@@ -74,17 +74,17 @@ output "ecs_cluster_arn" {
 
 output "api_ecs_service_name" {
   description = "api ecs service name"
-  value       = module.api_service.service_name
+  value       = var.deploy_app_services ? module.api_service[0].service_name : null
 }
 
 output "worker_ecs_service_name" {
   description = "worker ecs service name"
-  value       = module.worker_service.service_name
+  value       = var.deploy_app_services ? module.worker_service[0].service_name : null
 }
 
 output "dashboard_ecs_service_name" {
   description = "dashboard ecs service name"
-  value       = module.dashboard_service.service_name
+  value       = var.deploy_app_services ? module.dashboard_service[0].service_name : null
 }
 output "waf_web_acl_arn" {
   description = "wag web acl ARN"

@@ -64,3 +64,9 @@ variable "subdomain" {
   type        = string
   default     = "api"
 }
+
+variable "deploy_app_services" {
+  description = "Whether to create the ECS application services"
+  type        = bool
+  default     = false
+}
