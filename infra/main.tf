@@ -82,7 +82,7 @@ module "dashboard_service" {
   cluster_arn             = module.ecs_cluster.cluster_arn
   task_execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn           = module.iam.ecs_dashboard_role_arn
-  image                   = "${module.ecr.repository_url["dashboard"]}:latest"
+  image                   = "${module.ecr.repository_url["dashboard"]}:${var.image_tag}"
   container_port          = 8081
   container_name          = "dashboard"
   subnet_ids              = module.vpc.private_subnet_ids
@@ -110,7 +110,7 @@ module "api_service" {
   cluster_arn             = module.ecs_cluster.cluster_arn
   task_execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn           = module.iam.ecs_api_role_arn
-  image                   = "${module.ecr.repository_url["api"]}:latest"
+  image                   = "${module.ecr.repository_url["api"]}:${var.image_tag}"
   container_port          = 8080
   container_name          = "api"
   subnet_ids              = module.vpc.private_subnet_ids
@@ -146,7 +146,7 @@ module "worker_service" {
   task_execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn           = module.iam.ecs_worker_role_arn
   container_name          = "worker"
-  image                   = "${module.ecr.repository_url["worker"]}:latest"
+  image                   = "${module.ecr.repository_url["worker"]}:${var.image_tag}"
   subnet_ids              = module.vpc.private_subnet_ids
   securitygroup_id        = [module.security_groups.ecs_security_group_id]
   env = {

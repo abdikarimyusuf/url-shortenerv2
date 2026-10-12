@@ -404,18 +404,18 @@ data "aws_iam_policy_document" "github_actions_role_permissions" {
   }
 
   statement {
-  sid    = "AllowRDSKMSAccess"
-  effect = "Allow"
+    sid    = "AllowRDSKMSAccess"
+    effect = "Allow"
 
-  actions = [
-    "kms:DescribeKey",
-    "kms:CreateGrant"
-  ]
+    actions = [
+      "kms:DescribeKey",
+      "kms:CreateGrant"
+    ]
 
-  resources = [
-    "arn:aws:kms:eu-west-2:266380778025:key/0b4b1abd-5d98-4923-a42a-a27677c753cc"
-  ]
-}
+    resources = [
+      "arn:aws:kms:eu-west-2:266380778025:key/0b4b1abd-5d98-4923-a42a-a27677c753cc"
+    ]
+  }
 
   # Create and manage project IAM roles and policies
   statement {
@@ -492,6 +492,13 @@ data "aws_iam_policy_document" "github_actions_role_permissions" {
     }
   }
 
+  statement {
+    sid       = "DescribeSecretsManagerKMSKey"
+    effect    = "Allow"
+    actions   = ["kms:DescribeKey"]
+    resources = ["arn:aws:kms:eu-west-2:266380778025:key/74bda178-4891-44f4-9506-fd3e7037b940"]
+  }
+
   # Secrets Manager metadata
   statement {
     sid    = "SecretsManagerMetadata"
@@ -501,7 +508,9 @@ data "aws_iam_policy_document" "github_actions_role_permissions" {
       "secretsmanager:DescribeSecret",
       "secretsmanager:ListSecrets",
       "secretsmanager:TagResource",
-      "secretsmanager:UntagResource"
+      "secretsmanager:UntagResource",
+      "secretsmanager:CreateSecret",
+      "secretsmanager:GetRandomPassword"
     ]
 
     resources = ["*"]

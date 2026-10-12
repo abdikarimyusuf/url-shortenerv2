@@ -1,0 +1,76 @@
+name: Docker Build and Push
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - 'services/**'
+      - '.github/workflows/dockerpush.yaml'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-push: 
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-west-2
+      - name: verify identity
+        run: aws sts get-caller-identity
+
+      - name: Log in to  ECR
+        run:  |
+            aws ecr get-login-password --region eu-west-2 \
+              | docker login \
+                  --username AWS \
+                  --password-stdin 266380778025.dkr.ecr.eu-west-2.amazonaws.com
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set image tag
+        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+
+      - name: Build and Push API Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: 266380778025.dkr.ecr.eu-west-2.amazonaws.com/url-shortener-dev-api:${{ env.IMAGE_TAG }}
+
+      - name: Build and Push Dashboard Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/dashboard
+          file: ./services/dashboard/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: 266380778025.dkr.ecr.eu-west-2.amazonaws.com/url-shortener-dev-dashboard:${{ env.IMAGE_TAG }}
+
+      - name: Build and Push Worker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/worker
+          file: ./services/worker/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: 266380778025.dkr.ecr.eu-west-2.amazonaws.com/url-shortener-dev-worker:${{ env.IMAGE_TAG }}
+
+    
+
+        
+            
+
+        

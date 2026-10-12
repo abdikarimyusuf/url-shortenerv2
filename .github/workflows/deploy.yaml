@@ -1,0 +1,52 @@
+name: ECS Deploy 
+
+on:
+   workflow_run:
+    workflows:
+        - docker build and push
+    types:
+        - completed
+    branches:
+        - main
+
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy to ECS
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: verify identity
+        run: aws sts get-caller-identity
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: ./infra
+        run: terraform init
+
+      - name: Terraform plan
+        working-directory: ./infra
+        run: |
+            terraform plan -var="deploy_app_services=true" -var="image_tag=${{ github.event.workflow_run.head_sha }}" -out=tfplan
+
+      - name: Terraform apply
+        working-directory: ./infra
+        run: terraform apply -auto-approve tfplan
+
+    
+

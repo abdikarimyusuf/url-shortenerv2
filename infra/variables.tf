@@ -70,3 +70,10 @@ variable "deploy_app_services" {
   type        = bool
   default     = false
 }
+
+
+variable "image_tag" {
+  description = "Docker image tag deployed to ECS"
+  type        = string
+  default     = "bootstrap"
+}
