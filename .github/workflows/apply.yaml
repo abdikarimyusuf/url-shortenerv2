@@ -4,10 +4,18 @@ on:
     push:
         branches:
             - main
+        paths:
+            - 'infra/**'
+            - '.github/workflows/apply.yaml'
+          
 
 permissions:
   contents: read
   id-token: write
+  
+concurrency:
+  group: url-shortener-terraform-state
+  cancel-in-progress: false
 
 jobs:
   validate:

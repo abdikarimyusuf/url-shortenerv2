@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
   id-token: write
+  
+concurrency:
+  group: url-shortener-terraform-state
+  cancel-in-progress: false
 
 jobs:
   deploy:
