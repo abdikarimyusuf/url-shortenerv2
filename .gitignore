@@ -22,7 +22,7 @@ git rm -r --cached bootstrap/.terraform
 *.tfstate.*
 
 # Personal documentation
-**/README.md
+**/README.mt
 **/README.txt
 **/README.*
 
