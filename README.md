@@ -121,15 +121,41 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 **Pipeline safeguards:** OIDC with a restricted trust policy, least-privilege IAM, S3 state locking, protected branches, and no deployment after a failed build. Infrastructure apply and ECS deployment must not run concurrently against the same state. GitHub concurrency helps prevent overlap but is not a guaranteed FIFO queue; ensure older runs cannot overwrite a newer release.
 
-![Successful GitHub Actions validation](docs/images/01-github-actions-terraform-validation.png)
+---
 
-![Docker build and push workflow](docs/ 06-github-actions-docker-build-and-push-success.png)
+## Project Screenshots and Demonstration
 
-![ECR repositories](docs/images/06-ecr-repositories.png)
+### 1. AWS Architecture Diagram
 
-![Successful ECS deployment workflow](docs/images/04-github-actions-ecs-deployment-success.png)
+![AWS Architecture Diagram](./images/Architecture-Diagram.png)
 
-![ECS services running](docs/images/03-aws-cloudwatch-ecs-services.png)
+### 2. Terraform Validation
+
+![Terraform Validation](./images/01-github-actions-terraform-validation.png)
+
+### 3. CloudWatch Alarms
+
+![CloudWatch Alarms](./images/02-aws-cloudwatch-alarms-overview.png)
+
+### 4. ECS Services Monitoring
+
+![ECS Services Monitoring](./images/03-aws-cloudwatch-ecs-services.png)
+
+### 5. ECS Deployment
+
+![ECS Deployment](./images/04-github-actions-ecs-deployment-success.png)
+
+### 6. Terraform Apply and Validation
+
+![Terraform Apply and Validation](./images/05-github-actions-terraform-apply-validation.png)
+
+### 7. Docker Build and Push
+
+![Docker Build and Push](./images/06-github-actions-docker-build-and-push-success.png)
+
+### 8. Amazon ECR Repositories
+
+![Amazon ECR Repositories](./images/06-ecr-repositories.png)
 
 ---
 
