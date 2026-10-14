@@ -4,7 +4,7 @@ A multi-service URL shortener built to demonstrate Terraform, AWS networking, co
 
 **Stack:** AWS · Terraform · ECS Fargate · ECR · RDS PostgreSQL · Redis · SQS · S3 · CloudFront · GitHub Actions · OIDC
 
-[Watch the AWS deployment recording](IMAGES/deployment-demo.mp4) · [Repository] · [IMAGES/Architecture-Diagram.png ]
+ ![Architecture Diagram](IMAGES/Architecture-Diagram.png)
 
 https://github.com/user-attachments/assets/c8c62e61-0742-48e6-a4f4-72455e0a77c8
 
