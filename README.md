@@ -4,7 +4,6 @@ A multi-service URL shortener built to demonstrate Terraform, AWS networking, co
 
 **Stack:** AWS · Terraform · ECS Fargate · ECR · RDS PostgreSQL · Redis · SQS · S3 · CloudFront · GitHub Actions · OIDC
 
- ![Architecture Diagram](IMAGES/Architecture-Diagram.png)
 
 ---
 
@@ -31,25 +30,7 @@ The frontend is hosted on S3 and delivered through CloudFront. Redis supports UR
 
 ## 2. Architecture
 
-<!-- TODO: Add the final architecture diagram at docs/images/02-architecture.png. Ensure it matches the deployed Terraform configuration. -->
-
-```mermaid
-flowchart TB
-    User[Browser] --> CF[CloudFront]
-    CF --> S3[S3 frontend]
-    CF --> ALB[ALB API origin, if configured]
-    subgraph VPC[AWS VPC]
-        ALB --> API[API on ECS Fargate]
-        ALB --> Dash[Dashboard on ECS Fargate]
-        API <--> Redis[(Redis)]
-        API --> DB[(RDS PostgreSQL)]
-        API --> SQS[SQS queue]
-        SQS --> Worker[Worker on ECS Fargate]
-        Worker --> DB
-    end
-    API -. logs .-> CW[CloudWatch]
-    Worker -. logs .-> CW
-    Dash -. logs .-> CW
+< ![Architecture Diagram](IMAGES/Architecture-Diagram.png)
 ```
 
 Confirm that CloudFront origins, behaviours, WAF attachment and ALB routing in this diagram match the actual deployment.
@@ -140,15 +121,15 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 **Pipeline safeguards:** OIDC with a restricted trust policy, least-privilege IAM, S3 state locking, protected branches, and no deployment after a failed build. Infrastructure apply and ECS deployment must not run concurrently against the same state. GitHub concurrency helps prevent overlap but is not a guaranteed FIFO queue; ensure older runs cannot overwrite a newer release.
 
-![Successful GitHub Actions validation](docs/images/01-github-validation.png)
+![Successful GitHub Actions validation](docs/images/01-github-actions-terraform-validation.png)
 
-![Docker build and push workflow](docs/images/04-docker-build-push.png)
+![Docker build and push workflow](docs/ 06-github-actions-docker-build-and-push-success.png)
 
 ![ECR repositories](docs/images/06-ecr-repositories.png)
 
-![Successful ECS deployment workflow](docs/images/02-ecs-deploy-workflow.png)
+![Successful ECS deployment workflow](docs/images/04-github-actions-ecs-deployment-success.png)
 
-![ECS services running](docs/images/05-ecs-services.png)
+![ECS services running](docs/images/03-aws-cloudwatch-ecs-services.png)
 
 ---
 
