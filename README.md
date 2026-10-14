@@ -6,7 +6,12 @@ A multi-service URL shortener built to demonstrate Terraform, AWS networking, co
 
  ![Architecture Diagram](IMAGES/Architecture-Diagram.png)
 
-https://github.com/user-attachments/assets/c8c62e61-0742-48e6-a4f4-72455e0a77c8
+---
+
+
+https://github.com/user-attachments/assets/f9a31066-4451-4b43-a7b9-a9485993ff95
+
+
 
 ---
 
@@ -118,7 +123,7 @@ terraform validate
 terraform plan
 ```
 
-<!-- TODO: Add a sanitised Terraform plan screenshot at docs/images/03-terraform-plan.png. -->
+
 
 ---
 
