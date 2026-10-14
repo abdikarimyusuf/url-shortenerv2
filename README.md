@@ -31,7 +31,6 @@ The frontend is hosted on S3 and delivered through CloudFront. Redis supports UR
 ## 2. Architecture
  ![Architecture Diagram](images/Architecture-Diagram.png)
 ```
-
 Confirm that CloudFront origins, behaviours, WAF attachment and ALB routing in this diagram match the actual deployment.
 
 ### Request and event flow
@@ -101,7 +100,6 @@ terraform fmt -check -recursive
 terraform init
 terraform validate
 terraform plan
-```
 
 
 
