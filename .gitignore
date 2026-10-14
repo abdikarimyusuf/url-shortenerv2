@@ -24,7 +24,6 @@ git rm -r --cached bootstrap/.terraform
 # Personal documentation
 **/README.mt
 **/README.txt
-**/README.*
 
 # Docker Compose
 docker-compose.yml
