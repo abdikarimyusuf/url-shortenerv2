@@ -126,6 +126,8 @@ module "api_service" {
     REDIS_PORT = 6379
     REDIS_SSL  = "true"
     BASE_URL   = "https://abdikarim.co.uk"
+    SQS_QUEUE_URL = module.sqs.queue_url
+
 
 
   }
