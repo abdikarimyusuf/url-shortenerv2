@@ -101,7 +101,8 @@ terraform validate
 
 terraform plan
 
-**Consistency note:**
+```
+
 
 ---
 
