@@ -15,7 +15,7 @@ app = FastAPI()
  #   allow_headers=["*"],
 #)
 
-@app.get("/healthz")
+@app.get("/api/healthz")
 def health():
     return {"status": "ok", "ts": int(time.time()), "db": get_backend_type()}
 
