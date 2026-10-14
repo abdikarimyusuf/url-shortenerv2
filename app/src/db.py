@@ -97,16 +97,19 @@ def _init_postgres():
     def get(short_id: str):
         r = _get_redis()
 
-        # Check Redis first
+        # Check Redis for the URL mapping.
         cached_url = r.get(f"url:{short_id}")
 
         if cached_url:
-            return {
-                "id": short_id,
-                "url": cached_url,
-            }
+            # Fetch the complete record, including the current click count.
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    "SELECT id, url, clicks FROM urls WHERE id = %s",
+                    (short_id,),
+                )
+                return cur.fetchone()
 
-        # Redis miss → check PostgreSQL
+        # Redis miss: retrieve the record from PostgreSQL.
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
                 "SELECT id, url, clicks FROM urls WHERE id = %s",
@@ -115,10 +118,12 @@ def _init_postgres():
             item = cur.fetchone()
 
         if item:
-            # Store the URL in Redis for future requests
+            # Cache the URL mapping for future requests.
             r.set(f"url:{short_id}", item["url"])
 
         return item
+
+
 
     def incr(short_id: str):
         with conn.cursor() as cur:
