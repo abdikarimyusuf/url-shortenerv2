@@ -168,9 +168,9 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 - **Observability:** Use CloudWatch logs and add actionable alarms for ECS health, API errors/latency, database connections and SQS backlog/oldest-message age.
 
-![CloudWatch monitoring overview](docs/images/07-cloudwatch-monitoring.png)
+![CloudWatch monitoring overview](./images/02-aws-cloudwatch-alarms-overview.png)
 
-![ALB listeners, routing rules and healthy targets](docs/images/08-alb-routing.png)
+![ALB listeners, routing rules and healthy targets](./images/alb-listener.png)
 
 ### Troubleshooting lessons
 
@@ -231,7 +231,7 @@ Before calling a deployment successful:
 
 Do not claim zero-downtime releases or automated rollback until those behaviours have been tested. Keep the previous image available and consider database compatibility before rolling application code back.
 
-\<!-- TODO: Add end-to-end evidence at docs/images/09-application-e2e.png once shorten, redirect and analytics are verified. -->
+![live-analytics](./images/dashboard-test.png)
 
 ---
 

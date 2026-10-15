@@ -132,7 +132,7 @@ resource "aws_lb_listener_rule" "api" {
 
 
 resource "aws_lb_listener_rule" "dashboard" {
-  listener_arn = aws_lb_listener.http.id
+  listener_arn = aws_lb_listener.https.id
   priority     = 100
 
   action {
