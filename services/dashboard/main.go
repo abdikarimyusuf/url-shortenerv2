@@ -47,7 +47,7 @@ func main() {
 	waitForDB()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/api/healthz", handleHealth)
+	mux.HandleFunc("/healthz", handleHealth)
 	mux.HandleFunc("/api/summary", handleSummary)
 	mux.HandleFunc("/api/url/", handleURLStats)
 	mux.HandleFunc("/api/recent", handleRecent)

@@ -109,27 +109,6 @@ resource "aws_lb_listener" "https" {
 
 resource "aws_lb_listener_rule" "api" {
   listener_arn = aws_lb_listener.https.id
-  priority     = 100
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.api_tg.arn
-  }
-
-  condition {
-    path_pattern {
-      values = [
-        "/api/*"
-      ]
-    }
-  }
-
-
-}
-
-
-resource "aws_lb_listener_rule" "redirect_api" {
-  listener_arn = aws_lb_listener.https.id
   priority     = 200
 
   action {
@@ -140,6 +119,7 @@ resource "aws_lb_listener_rule" "redirect_api" {
   condition {
     path_pattern {
       values = [
+        "/api/*",
         "/i/*"
       ]
     }
@@ -149,9 +129,11 @@ resource "aws_lb_listener_rule" "redirect_api" {
 }
 
 
+
+
 resource "aws_lb_listener_rule" "dashboard" {
   listener_arn = aws_lb_listener.http.id
-  priority     = 200
+  priority     = 100
 
   action {
     type             = "forward"
@@ -160,7 +142,10 @@ resource "aws_lb_listener_rule" "dashboard" {
   condition {
     path_pattern {
       values = [
-        "/dashboard/*"
+        "/api/summary",
+        "/api/recent",
+        "/api/top",
+        "/api/url/*"
       ]
     }
   }
