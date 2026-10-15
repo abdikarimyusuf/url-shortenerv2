@@ -25,6 +25,12 @@ git rm -r --cached bootstrap/.terraform
 **/README.mt
 **/README.txt
 
+# Ignore all README.md files
+**/README.md
+
+# Keep the main README.md in the root folder
+!/README.md
+
 # Docker Compose
 docker-compose.yml
 docker-compose.yaml
