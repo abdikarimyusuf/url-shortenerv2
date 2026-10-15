@@ -6,7 +6,7 @@ on:
     paths:
       - 'app/**'
       - 'services/**'
-      - '.github/workflows/dockerpush.yaml'
+      - '.github/workflows/buildpush.yaml'
 
 permissions:
   contents: read

@@ -117,15 +117,15 @@ module "api_service" {
   securitygroup_id        = [module.security_groups.ecs_security_group_id]
   target_group_arn        = module.alb.api_tg_arn
   env = {
-    PORT       = "8080"
-    DB_NAME    = var.db_name
-    DB_USER    = var.db_username
-    DB_PORT    = module.rds.db_instance_port
-    DB_HOST    = module.rds.db_endpoint
-    REDIS_HOST = module.redis.redis_primary_endpoint
-    REDIS_PORT = 6379
-    REDIS_SSL  = "true"
-    BASE_URL   = "https://abdikarim.co.uk"
+    PORT          = "8080"
+    DB_NAME       = var.db_name
+    DB_USER       = var.db_username
+    DB_PORT       = module.rds.db_instance_port
+    DB_HOST       = module.rds.db_endpoint
+    REDIS_HOST    = module.redis.redis_primary_endpoint
+    REDIS_PORT    = 6379
+    REDIS_SSL     = "true"
+    BASE_URL      = "https://abdikarim.co.uk"
     SQS_QUEUE_URL = module.sqs.queue_url
 
 
