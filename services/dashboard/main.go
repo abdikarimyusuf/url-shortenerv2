@@ -47,11 +47,11 @@ func main() {
 	waitForDB()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", handleHealth)
-	mux.HandleFunc("/summary", handleSummary)
-	mux.HandleFunc("/url/", handleURLStats)
-	mux.HandleFunc("/recent", handleRecent)
-	mux.HandleFunc("/top", handleTop)
+	mux.HandleFunc("/api/healthz", handleHealth)
+	mux.HandleFunc("/api/summary", handleSummary)
+	mux.HandleFunc("/api/url/", handleURLStats)
+	mux.HandleFunc("/api/recent", handleRecent)
+	mux.HandleFunc("/api/top", handleTop)
 
 	port := getEnv("PORT", "8081")
 	log.Printf("Dashboard API listening on :%s", port)
