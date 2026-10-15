@@ -24,6 +24,7 @@ def _get_sqs():
             region_name=os.getenv("AWS_REGION", "eu-west-2"),
            # endpoint_url=os.getenv("AWS_ENDPOINT_URL"),
         )
+    return _sqs_client
 
 def publish_click_event(short_code: str, ip: str, user_agent: str, referer: str):
     event = {
