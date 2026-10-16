@@ -173,6 +173,8 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 ![ALB listeners, routing rules and healthy targets](./images/alb-listener.png)
 
+---
+
 ### Troubleshooting lessons
 
 
