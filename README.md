@@ -143,11 +143,8 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 ![Amazon ECR Repositories](./images/06-ecr-repositories.png)
 
-### 7. CloudWatch Alarms
 
-![CloudWatch Alarms](./images/02-aws-cloudwatch-alarms-overview.png)
-
-### 8. ECS Services Monitoring
+### 7. ECS Services Monitoring
 
 ![ECS Services Monitoring](./images/03-aws-cloudwatch-ecs-services.png)
 
@@ -175,9 +172,7 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 ---
 
-
-
-### Troubleshooting lessons
+## Troubleshooting lessons
 
 
 | Symptom | Root-cause investigation and lesson |
