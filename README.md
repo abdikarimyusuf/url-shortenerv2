@@ -144,10 +144,6 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 ![Amazon ECR Repositories](./images/06-ecr-repositories.png)
 
 
-### 7. ECS Services Monitoring
-
-![ECS Services Monitoring](./images/03-aws-cloudwatch-ecs-services.png)
-
 ---
 
 ## 6. Security and operations
