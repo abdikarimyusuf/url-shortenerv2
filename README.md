@@ -18,13 +18,10 @@ Users can create short URLs, follow redirects and view click analytics. The appl
 
 The frontend is hosted on S3 and delivered through CloudFront. Redis supports URL-mapping operations, PostgreSQL stores application and analytics data, and CloudWatch provides logs.
 
-\<!-- TODO: Add an end-to-end application screenshot at docs/images/09-application-e2e.png after testing shorten, redirect and analytics. -->
-
 ---
 ## 2. Architecture
 ![Architecture Diagram](./images/Architecture-Diagram.png)
 
-Confirm that CloudFront origins, behaviours, WAF attachment and ALB routing in this diagram match the actual deployment.
 
 ### Request and event flow
 1. The browser loads static assets from CloudFront/S3.
@@ -130,29 +127,29 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 ![Terraform Validation](./images/01-github-actions-terraform-validation.png)
 
-### 3. CloudWatch Alarms
-
-![CloudWatch Alarms](./images/02-aws-cloudwatch-alarms-overview.png)
-
-### 4. ECS Services Monitoring
-
-![ECS Services Monitoring](./images/03-aws-cloudwatch-ecs-services.png)
-
-### 5. ECS Deployment
+### 3. ECS Deployment
 
 ![ECS Deployment](./images/04-github-actions-ecs-deployment-success.png)
 
-### 6. Terraform Apply and Validation
+### 4. Terraform Apply and Validation
 
 ![Terraform Apply and Validation](./images/05-github-actions-terraform-apply-validation.png)
 
-### 7. Docker Build and Push
+### 5. Docker Build and Push
 
 ![Docker Build and Push](./images/06-github-actions-docker-build-and-push-success.png)
 
-### 8. Amazon ECR Repositories
+### 6. Amazon ECR Repositories
 
 ![Amazon ECR Repositories](./images/06-ecr-repositories.png)
+
+### 7. CloudWatch Alarms
+
+![CloudWatch Alarms](./images/02-aws-cloudwatch-alarms-overview.png)
+
+### 8. ECS Services Monitoring
+
+![ECS Services Monitoring](./images/03-aws-cloudwatch-ecs-services.png)
 
 ---
 
@@ -168,13 +165,16 @@ Four GitHub Actions workflows separate validation, infrastructure provisioning, 
 
 - **Observability:** Use CloudWatch logs and add actionable alarms for ECS health, API errors/latency, database connections and SQS backlog/oldest-message age.
 
+###  cloudwatch alarms overview
+
 ![CloudWatch monitoring overview](./images/02-aws-cloudwatch-alarms-overview.png)
+
+###  Routing rules and healthy targets
 
 ![ALB listeners, routing rules and healthy targets](./images/alb-listener.png)
 
 ### Troubleshooting lessons
 
-These are useful portfolio incident examples; include real logs and mark a fix as resolved only after verification.
 
 | Symptom | Root-cause investigation and lesson |
 |---|---|
@@ -183,11 +183,6 @@ These are useful portfolio incident examples; include real logs and mark a fix a
 | CloudFront API path returns 403/404 | A behaviour such as `/api/*` does not automatically rewrite a path if the FastAPI route is `/shorten`. Align the behaviour/origin path and application route, then test the exact URL end to end. |
 | SQS queue not found or worker idle | Verify queue name, region, endpoint and IAM permissions; inspect worker polling logs. |
 | ALB returns errors | Check listener rules, target group health checks, container ports and security-group rules. |
-For each incident, document **symptom → evidence → root cause → fix → prevention**.
-
-\<!-- TODO: Add real health-check incident evidence and a verified retest at docs/images/10-health-check-incident.png. --> &#x20;
-
-\<!-- TODO: Add CloudFront behaviour and successful API request evidence at docs/images/11-cloudfront-api-routing.png. -->
 
 ---
 
@@ -203,19 +198,23 @@ The main cost drivers are usually always-on compute and networking, rather than 
 | ALB / WAF / CloudFront | Avoid unnecessary duplicate resources and review request/data-transfer usage. |
 | CloudWatch / ECR / S3 | Set log retention and image lifecycle policies; remove obsolete artefacts safely. |
 | SQS | Monitor retries/backlog and batch where appropriate. |
-### Why avoid a NAT gateway?
 
-A NAT gateway can have a fixed hourly charge even at very low traffic. Using an illustrative reference rate of **$0.045/hour**, one gateway running for 730 hours is about **$32.85/month before data processing**. An interface endpoint at an illustrative **$0.01/hour** is about **$7.30/month per AZ**, before processing; several endpoints across multiple AZs can cost more than one NAT gateway. S3/DynamoDB gateway endpoints have no endpoint hourly charge when applicable.
 
-These are **illustrative USD rates, not an `eu-west-2` quote**. Verify current prices with the [AWS VPC pricing page](https://aws.amazon.com/vpc/pricing/), [PrivateLink pricing](https://aws.amazon.com/privatelink/pricing/) and the AWS Pricing Calculator. NAT provides general outbound access; VPC endpoints only provide access to supported services. Confirm that tasks can reach ECR, logs, secrets and queues before deciding the network design.
+### Why I avoided a NAT gateway from a pricing perspective?
 
-\<!-- TODO: Add cost evidence at docs/images/12-cost-analysis.png and label it clearly as actual spend or estimate. -->
+A NAT Gateway can incur a fixed hourly charge even when traffic is very low. As an illustrative reference, AWS's published European pricing of €0.0513/hour converts to approximately £0.043/hour, or around £31.70/month for one gateway running continuously for 730 hours, before data processing and data transfer charges.
+
+An interface VPC endpoint, using an illustrative converted rate of £0.0075/hour, costs approximately £5.48/month per Availability Zone (AZ) before data processing charges. Multiple interface endpoints deployed across several AZs can cost more than a single NAT Gateway.
+
+S3 and DynamoDB gateway endpoints have no endpoint hourly charge, making them useful cost-saving options where applicable. Actual costs depend on the AWS Region, exchange rates, data usage and applicable taxes.
+
+
 
 ---
 
 ## 8. Testing and release verification
 
-Before calling a deployment successful:
+deeming a deployment successful:
 
 - Confirm the expected SHA-tagged images were pushed to ECR.
 
@@ -229,19 +228,17 @@ Before calling a deployment successful:
 
 - Test failure cases such as a failed health check, worker restart and duplicate event.
 
-Do not claim zero-downtime releases or automated rollback until those behaviours have been tested. Keep the previous image available and consider database compatibility before rolling application code back.
-
 ![live-analytics](./images/dashboard-test.png)
 
 ---
 
 ## 9. Improvements roadmap
 
-1. **Release safety:** Post-deployment smoke tests, image digests, tested rollback and strict deployment ordering.
+1. **Release safety:** tested rollback and strict deployment ordering.
 
-2. **Reliability:** SQS dead-letter queue, idempotent worker writes, queue alarms, cache TTL and dependency-failure tests.
+2. **Reliability:**  idempotent worker writes, queue alarms, cache TTL and dependency-failure tests.
 
-3. **Security:** Terraform and image scanning, tighter IAM, dependency pinning and build provenance.
+3. **Security:** Terraform and image scanning, dependency pinning and build provenance.
 
 4. **Cost/performance:** Budgets, resource right-sizing, load tests, measured cache/database performance and endpoint-cost review.
 
@@ -251,21 +248,17 @@ Do not claim zero-downtime releases or automated rollback until those behaviours
 
 ## 10. Portfolio evidence checklist
 
-- [ ] Architecture diagram matches the deployed resources.
+- [-] Architecture diagram matches the deployed resources.
 
-- [ ] Four workflows show successful runs.
+- [-] Four workflows show successful runs.
 
-- [ ] ECR images and ECS deployment use the same source revision.
+- [-] ECR images and ECS deployment use the same source revision.
 
-- [ ] End-to-end application flow is tested.
+- [-] End-to-end application flow is tested.
 
-- [ ] At least one troubleshooting incident shows evidence, fix and retest.
+- [-] Screenshots are saved under `images/` and contain no secrets. Only embed screenshots after adding the matching files to `docs/images/`; TODO comments are hidden in the rendered README.
 
-- [ ] Cost estimates are clearly distinguished from actual billing.
-
-- [ ] Screenshots are saved under `docs/images/` and contain no secrets. Only embed screenshots after adding the matching files to `docs/images/`; TODO comments are hidden in the rendered README.
-
-- [ ] Every feature described as implemented has been verified; planned improvements are labelled as planned.
+- [-] Every feature described as implemented has been verified; planned improvements are labelled as planned.
 
 ---
 
